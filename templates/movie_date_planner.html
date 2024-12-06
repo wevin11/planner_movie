@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Date Planner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: pink;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="datetime-local"] {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-top: 15px;
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://media.tenor.com/v3DAIe73r00AAAAM/happy-cat-smile-cat.gif" alt="Excited GIF" style="width: 300px; height: auto; margin: 20px 0; border-radius: 8px;">
+        <h1>Really? OMG SO EXCITING!!!</h1>
+        <h1>When would you like to have our movie date?</h1>
+        <input type="datetime-local" id="movie-date" />
+        <button onclick="submitDate()">Submit</button>
+        <p class="message" id="message"></p>
+    </div>
+
+    <script>
+        function submitDate() {
+            const dateInput = document.getElementById("movie-date").value;
+            const messageElement = document.getElementById("message");
+
+            if (dateInput) {
+                const formattedDate = new Date(dateInput).toLocaleString();
+                console.log("Formatted date to send:", formattedDate); // Debugging
+
+                messageElement.textContent = `Great! We'll plan for: ${formattedDate}`;
+
+                // Send the date to the backend
+                fetch('http://127.0.0.1:5000/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date: formattedDate })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Redirect to confirmation page after success
+                        window.location.href = '/confirmation'; // Change URL as needed
+                    } else {
+                        alert("Failed to send the details.");
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+            } else {
+                messageElement.textContent = "Please select a date and time.";
+                messageElement.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
